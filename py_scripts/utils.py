@@ -18,10 +18,10 @@ import pickle
 # MetaboLights api
 from requests import Session
 
-MetaboLightsWSUrl = "http://www.ebi.ac.uk/metabolights/webservice/"
-MetaboLightsWSStudyUrl = "http://www.ebi.ac.uk/metabolights/webservice/study/"
-MetaboLightsWSStudiesList = MetaboLightsWSUrl + "study/list"
-MetaboLightsWSCompoundsUrl = "http://www.ebi.ac.uk/metabolights/webservice/compounds/"
+MetaboLightsWSUrl = "http://www.ebi.ac.uk/metabolights/ws/"
+MetaboLightsWSStudyUrl = MetaboLightsWSUrl + "studies/public/study/"
+MetaboLightsWSStudiesList = MetaboLightsWSUrl + "studies"
+MetaboLightsWSCompoundsUrl = MetaboLightsWSUrl + "compounds/"
 MetaboLightsWSCompoundsList = MetaboLightsWSUrl + "compounds/list"
 
 # CHEBI api
@@ -58,6 +58,8 @@ class Timer:
         print('Time elapsed:' + self.elapsed_time.__str__() + ' seconds')
 
 def fetchMetaboLightsStudiesList():
+    #studiesList = ["MTBLS626","MTBLS241","MTBLS762","MTBLS533","MTBLS1437"]
+    #return studiesList
     return requests.get(MetaboLightsWSStudiesList).json()['content']
 
 def fetchMetaboLightsCompoundsList():
@@ -96,11 +98,16 @@ def generateMLStudyCompoundMappingFile(mappingFile, debug):
             continue
         for assay in studyContent["assays"]:
             try:
-                metabolitesLines = requests.get( MetaboLightsWSStudyUrl + study + "/assay/" + str(assayNumber) + "/maf").json()["content"]['metaboliteAssignmentLines']
+                mafFilePath = assay["metaboliteAssignment"]["metaboliteAssignmentFileName"]
+                mafSplits = mafFilePath.split("/")
+                mafFileName = mafSplits[len(mafSplits)-1]
+                mafAPIurl = MetaboLightsWSStudiesList + "/" +study+ "/" +mafFileName
+                metabolitesLines = requests.get(mafAPIurl).json()["data"]["rows"]
+                #metabolitesLines = requests.get( MetaboLightsWSStudyUrl + study + "/assay/" + str(assayNumber) + "/maf").json()["content"]['metaboliteAssignmentLines']
                 if metabolitesLines is None:
                     continue
                 for line in metabolitesLines:
-                    dbID = str(line['databaseIdentifier'])
+                    dbID = str(line['database_identifier'])
                     part = ""
                     if dbID != '':
                         species = str(line['species'])

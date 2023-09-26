@@ -48,6 +48,7 @@ def main(args):
     compound_list = []
     try:
         compound_list = requests.get("http://www.ebi.ac.uk/metabolights/webservice/compounds/list").json()['content']
+        #compound_list = ["MTBLC57683"]
     except Exception as e:
         logging.exception('unable to get compounds list.')
         exit(0)
