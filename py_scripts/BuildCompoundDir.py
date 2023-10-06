@@ -135,7 +135,7 @@ class MiscUrls(BaseModel):
     rhea_api: str = "https://www.rhea-db.org/rhea/"
     wikipathways_api: str = "https://webservice.wikipathways.org/findPathwaysByXref?ids="
     mona_api: str = "http://mona.fiehnlab.ucdavis.edu/rest/spectra/search?query=compound.metaData=q=%27name==\%22InChIKey\%22%20and%20value==\%22"
-    new_mona_api: str = "https://mona.fiehnlab.ucdavis.edu/rest/spectra/search?query=exists(compound.metaData.name%3A'InChIKey'%20and%20compound.metaData.value%3A'{0}')"
+    new_mona_api: str = "https://mona.fiehnlab.ucdavis.edu/rest/spectra/search?endpoint=search&query=exists(compound.metaData.name%3A%27InChIKey%27%20and%20compound.metaData.value%3A%27{0}%27)%20and%20exists((tags.text%3A%27LC-MS%27))&size=10"
 
 
 class CompoundBuilderUrls(BaseModel):
@@ -504,7 +504,7 @@ def get_chebi_data(id, ml_mapping, config, session: Session) -> dict:
 
     # log out the ID so we know it's a valid 'un
     _InternalUtils.gimme_line()
-    print(root.find("{https://www.ebi.ac.uk/webservices/chebi}chebiId").text)
+    print(root.find("{https://www.ebi.ac.uk/webservices/chebi}chebiId"))
 
     # generate the 'basic' dict.
     chebi_basic_dict = {
